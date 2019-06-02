@@ -1,0 +1,17 @@
+<script src="../fx.js"></script>
+
+<script>
+    const join = seq => _.reduce((a, b) => `${a}${seq}${b}`)
+    const gugudan = () => _.go(
+        L.range(2, 10),
+        L.map(v1 => _.go(
+            L.range(1, 10),
+            L.map(v2 => `${v1}x${v2}=${v1*v2}`),
+            join("\n")
+        )),
+        join("\n\n"),
+        console.log
+    )
+
+    gugudan()
+</script>

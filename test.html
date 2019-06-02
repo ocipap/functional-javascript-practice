@@ -1,0 +1,84 @@
+<script>
+  function add(a, b) {
+    return a + b
+  }
+
+  const curry = f => (a, ..._) => _.length ? f(a, ..._) : (..._) => f(a, ..._)
+
+  const reduce = (f, acc, iter) => {
+    if (!iter) {
+      iter = acc[Symbol.iterator]()
+      acc = iter.next().value
+    }
+    for (const a of iter) {
+      acc = f(acc, a)
+    }
+    return acc
+  }
+  const pipe = (...func) => val => reduce((a, f) => f(a), val, func)
+  add = curry(add)
+  const add10 = add(10)
+  console.log(add10(5))
+
+  const pipe1 = pipe(
+    v => v + 10,
+    v => v * 2,
+    v => v - 1
+  )
+  console.log(pipe1(1))
+
+  console.clear()
+  let list = [1, 2, 3]
+  let iter = list[Symbol.iterator]() // 이터레이터 반환  
+  let firstObj = iter.next()
+  let secondObj = iter.next()
+  let thirdObj = iter.next()
+  let doneObj = iter.next()
+  console.log(firstObj)
+  console.log(secondObj)
+  console.log(thirdObj)
+  console.log(doneObj)
+  console.clear()
+
+  const map = (f, iter) => {
+    let arr = []
+    for (const a of iter) {
+      arr.push(f(a))
+    }
+    return arr
+  }
+
+  const filter = (f, iter) => {
+    let arr = []
+    for (const a of iter) {
+      if (f(a)) arr.push(a)
+    }
+    return arr
+  }
+
+  const sampleGenerator = function* () {
+    yield "hello"
+    yield "my name is"
+    yield "papico"
+    yield ":)"
+  }
+  for (const val of sampleGenerator()) {
+    console.log(val)
+  }
+
+  console.clear()
+
+  const infinity = function* () {
+    let i = -1
+    while (true) {
+      yield ++i
+    }
+  }
+  let infi = infinity()
+  console.log(infi.next())
+  console.log(infi.next())
+  console.log(infi.next())
+  console.log(infi.next())
+  console.log(infi.next())
+  console.log(infi.next())
+</script>

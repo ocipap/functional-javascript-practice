@@ -1,0 +1,20 @@
+<script src="../fx.js"></script>
+
+<script>
+const users = [
+  {name: 'AA', age: 11},
+  {name: 'BB', age: 47},
+  {name: 'CC', age: 24},
+  {name: 'DD', age: 32},
+  {name: 'EE', age: 21},
+  {name: 'FF', age: 51},
+]
+
+const add = (a, b) => a + b
+
+console.log(
+  _.reduce(add,
+    _.filter(n => n > 30, 
+      _.map(u => u.age, users)))
+)
+</script>

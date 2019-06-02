@@ -1,0 +1,33 @@
+<script src="../fx.js"></script>
+
+<script>
+const obj1 = {
+  a: 1,
+  b: undefined,
+  c: 'CC',
+  d: 'DD'
+}
+
+const join = _.curry((sep, iter) => _.reduce((a, b) => `${a}${sep}${b}`, iter))
+
+const query = _.pipe(
+  Object.entries,
+  _.reject(([_ , v]) => v === undefined),
+  _.map(join("=")),
+  join("&"),
+  console.log
+)
+
+const split = _.curry((sep, str) => str.split(sep))
+
+const queryToObject = _.pipe(
+  split("&"),
+  _.map(split("=")),
+  _.map(([k, v]) => ({[k]: v})),
+  _.reduce(Object.assign),
+  console.log
+)
+
+query(obj1)
+queryToObject("a=1&c=CC&d=DD")
+</script>

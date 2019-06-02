@@ -1,0 +1,80 @@
+<script src="../fx.js"></script>
+
+<script>
+    const join = sep => _.reduce((a, b) =>`${a}${sep}${b}`)
+    const star = (limit) =>  _.go(
+        _.range(1, limit),
+        _.map(v => _.go(
+            _.range(v),
+            _.map(v => "*"),
+            join("")
+        )),
+        join("\n"),
+        console.log
+    )
+
+    const star2 = (limit) => {
+        let stars = ""
+        for(let i = 1; i <= limit; i++) {
+            let str = ""
+            for(let j = 0; j < i; j++) {
+                str += "*"
+            }
+            str += "\n"
+            stars += str
+        }
+        console.log(stars)
+    }
+
+    const curry = f => (a, ..._) => (_.length) ? f(a, ..._) : (..._) => f(a, ..._)
+
+    const range = (start, limit) => {
+        let res = []
+        if (!limit)(limit = start, start = 0)
+        while (true) {
+            if(res.length === limit) return res
+            res.push(start++)
+        }
+        return res
+    }
+
+    const map = curry((f, iter) => {
+        let res = []
+        for (const a of iter) {
+            res.push(f(a))
+        }
+        return res
+    })
+
+    const reduce = (f, acc, iter) => {
+        if (!acc) return iter => reduce(f, iter)
+        if (!iter) {
+            iter = acc[Symbol.iterator]()
+            acc = iter.next().value
+        }
+        for (const a of iter) {
+            acc = f(acc, a)
+        }
+        return acc
+    }
+
+    const pipe = (...func) => val => reduce((a, f) => f(a), val, func)
+
+    const go = (val, ...func) => pipe(...func)(val)
+
+    const join = sep => reduce((a, b) => `${a}${sep}${b}`)
+
+    const star = limit => go(
+        range(1, limit),
+        map(v => go(
+            range(v),
+            map(_ => "*"),
+            join("")
+        )),
+        join("\n"),
+        console.log
+    )
+    star(5)
+    //star(10)
+    //star2(5)
+</script>

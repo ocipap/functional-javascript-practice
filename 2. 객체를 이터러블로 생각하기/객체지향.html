@@ -1,0 +1,81 @@
+<script src="../fx.js"></script>
+
+<script>
+  const { log } = console
+</script>
+
+<script>
+  class Model {
+    constructor(attrs = {}) {
+      this._attrs = attrs
+    }
+
+    get(k) {
+      return this._attrs[k]
+    }
+
+    set(k, v) {
+      this._attrs[k] = v
+      return this
+    }
+  }
+
+  class Collection {
+    constructor(models = []) {
+      this._models = models
+    }
+
+    at(idx) {
+      return this._models[idx]
+    }
+
+    add(model) {
+      this._models.push(model)
+      return this
+    }
+
+    * [Symbol.iterator]() {
+      yield* this._models
+    }
+
+    // [Symbol.iterator](){
+    //   return this._models[Symbol.iterator]()
+    // }
+  }
+
+  const coll = new Collection()
+  coll.add(new Model({ id: 1, name: 'AA' }))
+  coll.add(new Model({ id: 2, name: 'BB' }))
+  coll.add(new Model({ id: 3, name: 'CC' }))
+
+  _.go(
+    coll,
+    _.each(m => m.set('name', m.get('name').toLowerCase())),
+    _.each(console.log),
+    console.log,
+  )
+
+  console.clear()
+  const add = (a, b) => a+b
+  const addAll = _.reduce(add)
+  class Product extends Model {}
+
+  class Products extends Collection {
+    getPrices() {
+      return L.map(p => p.get("price"), this)
+    }
+    totalPrice() {
+      return addAll(this.getPrices())
+    }
+  }
+
+  const products = new Products()
+  products.add(new Product({ id: 1, price: 10000 }))
+  products.add(new Product({ id: 2, price: 20000 }))
+  products.add(new Product({ id: 3, price: 35000 }))
+  products.add(new Product({ id: 4, price: 12000 }))
+  console.log(products.getPrices())
+  console.log(products.totalPrice())
+
+
+</script>

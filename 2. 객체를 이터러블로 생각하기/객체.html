@@ -1,0 +1,62 @@
+<script src="../fx.js"></script>
+
+<script>
+  L.values = function* (obj) {
+    for (const k in obj) yield obj[k]
+  }
+
+  L.keys = function* (obj) {
+    for (const k in obj) yield k
+  }
+
+  L.entries = function* (obj) {
+    for (const k in obj) yield [k, obj[k]]
+  }
+
+  const arr = [
+    ["a", 1],
+    ["b", 2]
+  ]
+  const object = entries =>
+    _.reduce((obj, [k, v]) => (obj[k] = v, obj), {}, entries)
+
+  const mapObject = (func, obj) =>
+    _.go(
+      L.entries(obj),
+      L.map(([k, v]) => [k, func(v)]),
+      object
+    )
+
+  const pick = (ks, obj) => 
+    _.go(ks,
+      _.map(k => [k, obj[k]]),
+      _.reject(([k, v]) => v === undefined),
+      object)
+
+      
+  const users = [
+    { id: 5, name: 'AA', age: 35 },
+    { id: 10, name: 'BB', age: 26 },
+    { id: 19, name: 'CC', age: 28 },
+    { id: 23, name: 'CC', age: 34 },
+    { id: 24, name: 'EE', age: 23 }
+  ];
+      
+  const indexBy = (f, iter) => 
+    _.reduce((obj, a) => (obj[f(a)] = a, obj), {}, iter)
+  
+  console.log(object(arr))
+  console.log(mapObject(a => a + 10, {
+    'a': 1,
+    'b': 2
+  }))
+
+  console.log(pick(['b', 'c', 'z'], {
+    'a': 1,
+    'b': 2,
+    'c': 3,
+    'd': 4
+  }))
+
+  console.log(indexBy(u => u.id, users))
+</script>

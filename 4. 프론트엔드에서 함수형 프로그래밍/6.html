@@ -14,7 +14,7 @@
       transition: opacity .3s;
     }
 
-    .confirm {
+    .confirm, .modal {
       position: fixed;
       top: 0;
       left: 0;
@@ -61,6 +61,53 @@
       border: 0;
       color: #fff;
       background-color: #000;
+    }
+
+    .modal .body {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: auto;
+      width: 330px;
+      height: 370px;
+      background: #fff;
+      -webkit-border-radius: 8px;
+      -moz-border-radius: 8px;
+      border-radius: 8px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal .modal-head {
+      padding: 0px 20px;
+      height: 60px;
+      border-bottom: 1px solid #f0f0f0;
+      text-align: center;
+    }
+
+    .modal .modal-body {
+      flex: 1 1 auto;
+    }
+
+    .modal .modal-body .box {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      margin: auto;
+    }
+
+    .modal .modal-body .box img {
+      position: absolute;
+      top: 0px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      max-width: 250px;
+      max-height: 250px;
+      margin: auto;
     }
 
     .images {
@@ -126,11 +173,12 @@
   </style>
 </head>
 <body>
+
 <script>
   const $ = {}
 
-  $.qs = document.querySelector.bind(document)
-  $.qsa = document.querySelectorAll.bind(document)
+  $.qs = (sel, parent = document) => parent.querySelector(sel)
+  $.qsa = (sel, parent = document) => parent.querySelectorAll(sel)
 
   $.find = _.curry($.qs)
   $.findAll = _.curry($.qsa)
@@ -140,8 +188,10 @@
     wrap.innerHTML = html
     return wrap.children[0]
   }
-  $.remove = el => el.parentNode.removeChild(el)
+
   $.closest = _.curry((sel, el) => el.closest(sel))
+  $.remove = el => el.parentNode.removeChild(el)
+
   $.append = _.curry((parent, child) => parent.appendChild(child))
   $.addClass = _.curry((name, el) => el.classList.add(name))
 
@@ -162,31 +212,46 @@
     $.append($.qs('body')),
     ..._.map(btn => _.tap(
       $.find(`.${btn.type}`),
-      $.on("click", ({ currentTarget: ct }) => _.go(
+      $.on('click', ({ currentTarget: ct }) => _.go(
         ct,
         $.closest('.confirm'),
         $.remove,
-        _ => resolve(btn.value))),
-    ), btns)
+        _ => resolve(btn.value),
+      )),
+    ), btns),
   )))
 
   Ui.confirm = Ui.message([
-    { type: 'cancel', name: '취소', value: false },
-    { type: 'ok', name: '확인', value: true },
+    { type: 'cancel', value: false, name: '취소' },
+    { type: 'ok', value: true, name: '확인' },
   ])
 
   Ui.alert = Ui.message([
-    { type: 'ok', name: '확인', value: true },
+    { type: 'ok', value: false, name: '획인' },
   ])
 
-  Ui.remover = (btnSel, targetSel) => _.pipe(
+  Ui.remover = (btnSel, targetSel) => _.tap(
     $.findAll(btnSel),
-    $.on("click", async ({currentTarget: ct}) => await Ui.confirm("삭제하시겠습니까?") &&_.go(
+    $.on("click", async ({ currentTarget: ct }) => await Ui.confirm("삭제하시겠습니까?") && _.go(
       ct,
       $.closest(targetSel),
       $.remove,
-      async _ => await Ui.alert("삭제되었습니다.")
+      async _ => await Ui.alert('삭제되었습니다.'),
     )))
+
+  Ui.modal = (head, body) => new Promise(resolve => _.go(
+    `<div class="modal">
+      <div class="body">
+        <div class="modal-head"><h2>${head}</h2></div>
+        <div class="modal-body">${body}</div>
+      </div>
+    </div>`,
+    $.el,
+    $.append($.qs('body')),
+    resolve,
+  ))
+
+
 
 
 </script>
@@ -195,315 +260,499 @@
     {
       "name": "HEART",
       "url": "https://s3.marpple.co/files/m2/t3/colored_images/45_1115570_1162087_150x0.png",
+      "index": 0,
     },
     {
       "name": "하트",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548918825999_78819_150x0.png",
+      "index": 1,
     },
     {
       "name": "2",
       "url": "https://s3.marpple.co/f1/2018/1/1054966_1516076769146_28397_150x0.png",
-    }, {
+      "index": 2,
+    },
+    {
       "name": "6",
       "url": "https://s3.marpple.co/f1/2018/1/1054966_1516076919028_64501_150x0.png",
-    }, {
+      "index": 3,
+    },
+    {
       "name": "도넛",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548918758054_55883_150x0.png",
-    }, {
+      "index": 4,
+    },
+    {
       "name": "14",
       "url": "https://s3.marpple.co/f1/2018/1/1054966_1516077199329_75954_150x0.png",
-    }, {
+      "index": 5,
+    },
+    {
       "name": "15",
       "url": "https://s3.marpple.co/f1/2018/1/1054966_1516077223857_39997_150x0.png",
-    }, {
+      "index": 6,
+    },
+    {
       "name": "시계",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548918485881_30787_150x0.png",
-    }, {
+      "index": 7,
+    },
+    {
       "name": "돈",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548918585512_77099_150x0.png",
-    }, {
+      "index": 8,
+    },
+    {
       "name": "10",
       "url": "https://s3.marpple.co/f1/2018/1/1054966_1516077029665_73411_150x0.png",
-    }, {
+      "index": 9,
+    },
+    {
       "name": "7",
       "url": "https://s3.marpple.co/f1/2018/1/1054966_1516076948567_98474_150x0.png",
-    }, {
+      "index": 10,
+    },
+    {
       "name": "농구공",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548918719546_22465_150x0.png",
-    }, {
+      "index": 11,
+    },
+    {
       "name": "9",
       "url": "https://s3.marpple.co/f1/2018/1/1054966_1516077004840_10995_150x0.png",
-    }, {
+      "index": 12,
+    },
+    {
       "name": "선물",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548918791224_48182_150x0.png",
-    }, {
+      "index": 13,
+    },
+    {
       "name": "당구공",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548918909204_46098_150x0.png",
-    }, {
+      "index": 14,
+    },
+    {
       "name": "유령",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548918927120_12321_150x0.png",
-    }, {
+      "index": 15,
+    },
+    {
       "name": "원숭이",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548919417134_80857_150x0.png",
-    }, {
+      "index": 16,
+    },
+    {
       "name": "3",
       "url": "https://s3.marpple.co/f1/2018/1/1054966_1516076802375_69966_150x0.png",
-    }, {
+      "index": 17,
+    },
+    {
       "name": "16",
       "url": "https://s3.marpple.co/f1/2018/1/1054966_1516077254829_36624_150x0.png",
-    }, {
+      "index": 18,
+    },
+    {
       "name": "안경",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548918944668_23881_150x0.png",
-    }, {
+      "index": 19,
+    },
+    {
       "name": "폭죽",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548919005789_67520_150x0.png",
-    }, {
+      "index": 20,
+    },
+    {
       "name": "폭죽 2",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548919027834_48946_150x0.png",
-    }, {
+      "index": 21,
+    },
+    {
       "name": "박",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548919062254_67900_150x0.png",
-    }, {
+      "index": 22,
+    },
+    {
       "name": "톱니바퀴",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548919302583_24439_150x0.png",
-    }, {
+      "index": 23,
+    },
+    {
       "name": "11",
       "url": "https://s3.marpple.co/f1/2018/1/1054966_1516077078772_79004_150x0.png",
-    }, {
+      "index": 24,
+    },
+    {
       "name": "핫도그",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548919086961_23322_150x0.png",
-    }, {
+      "index": 25,
+    },
+    {
       "name": "고기",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548919274214_33127_150x0.png",
-    }, {
+      "index": 26,
+    },
+    {
       "name": "책",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548919326628_13977_150x0.png",
-    }, {
+      "index": 27,
+    },
+    {
       "name": "돋보기",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548919363855_26766_150x0.png",
-    }, {
+      "index": 28,
+    },
+    {
       "name": "집",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548919395033_19373_150x0.png",
-    }, {
+      "index": 29,
+    },
+    {
       "name": "사람",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548918696715_44274_150x0.png",
-    }, {
+      "index": 30,
+    },
+    {
       "name": "연필",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548919437239_32501_150x0.png",
-    }, {
+      "index": 31,
+    },
+    {
       "name": "파일",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548919468582_23707_150x0.png",
-    }, {
+      "index": 32,
+    },
+    {
       "name": "스피커",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548919495804_49080_150x0.png",
-    }, {
+      "index": 33,
+    },
+    {
       "name": "트로피 ",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548918438617_69000_150x0.png",
-    }, {
+      "index": 34,
+    },
+    {
       "name": "카메라",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548919847041_33220_150x0.png",
-    }, {
+      "index": 35,
+    },
+    {
       "name": "그래프",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548918521301_43877_150x0.png",
-    }, {
+      "index": 36,
+    },
+    {
       "name": "가방",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548918642937_11925_150x0.png",
-    }, {
+      "index": 37,
+    },
+    {
       "name": "입술",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548919886042_10049_150x0.png",
-    }, {
+      "index": 38,
+    },
+    {
       "name": "fire",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548920036111_19302_150x0.png",
-    }, {
+      "index": 39,
+    },
+    {
       "name": "TV",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548920054808_42469_150x0.png",
-    }, {
+      "index": 40,
+    },
+    {
       "name": "핸드폰",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548920109727_43404_150x0.png",
-    }, {
+      "index": 41,
+    },
+    {
       "name": "노트북",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548920142776_26474_150x0.png",
-    }, {
+      "index": 42,
+    },
+    {
       "name": "전구",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548920181784_14964_150x0.png",
-    }, {
+      "index": 43,
+    },
+    {
       "name": "장미",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548920264149_78607_150x0.png",
-    }, {
+      "index": 44,
+    },
+    {
       "name": "맥주",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548920312701_18073_150x0.png",
-    }, {
+      "index": 45,
+    },
+    {
       "name": "마이크",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548920397855_39832_150x0.png",
-    }, {
+      "index": 46,
+    },
+    {
       "name": "별",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548920420823_49166_150x0.png",
-    }, {
+      "index": 47,
+    },
+    {
       "name": "와이파이",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548920438005_35247_150x0.png",
-    }, {
+      "index": 48,
+    },
+    {
       "name": "헤드폰",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548920468136_82088_150x0.png",
-    }, {
+      "index": 49,
+    },
+    {
       "name": "peace",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548920538719_19072_150x0.png",
-    }, {
+      "index": 50,
+    },
+    {
       "name": "계산기",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548920348341_40080_150x0.png",
-    }, {
+      "index": 51,
+    },
+    {
       "name": "poo 2",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548924259247_12839_150x0.png",
-    }, {
+      "index": 52,
+    },
+    {
       "name": "poo 3",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548924850867_72121_150x0.png",
-    }, {
+      "index": 53,
+    },
+    {
       "name": "poo 4",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548925154648_40289_150x0.png",
-    }, {
+      "index": 54,
+    },
+    {
       "name": "poo",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548918988097_38121_150x0.png",
-    }, {
+      "index": 55,
+    },
+    {
       "name": "모니터",
       "url": "https://s3.marpple.co/f1/2016/7/1043023_1469769774483_150x0.png",
-    }, {
+      "index": 56,
+    },
+    {
       "name": "talk",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548927111573_76831_150x0.png",
-    }, {
+      "index": 57,
+    },
+    {
       "name": "keyboard",
       "url": "https://s3.marpple.co/f1/2018/1/1054966_1516330864360_25866_150x0.png",
-    }, {
+      "index": 58,
+    },
+    {
       "name": "daily 2",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548926169159_58295_150x0.png",
-    }, {
+      "index": 59,
+    },
+    {
       "name": "daily",
       "url": "https://s3.marpple.co/f1/2018/7/1199664_1531814945451_49451_150x0.png",
-    }, {
+      "index": 60,
+    },
+    {
       "name": "편지",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548920087850_99421_150x0.png",
-    }, {
+      "index": 61,
+    },
+    {
       "name": "sns 하단바 2",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548917218903_88079_150x0.png",
-    }, {
+      "index": 62,
+    },
+    {
       "name": "sns 하단바",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548917192465_28365_150x0.png",
-    }, {
+      "index": 63,
+    },
+    {
       "name": "sns 이모지 6",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548927313417_99007_150x0.png",
-    }, {
+      "index": 64,
+    },
+    {
       "name": "sns 이모지",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548927219485_18861_150x0.png",
-    }, {
+      "index": 65,
+    },
+    {
       "name": "13",
       "url": "https://s3.marpple.co/f1/2018/1/1054966_1516077164559_59630_150x0.png",
-    }, {
+      "index": 66,
+    },
+    {
       "name": "iphone",
       "url": "https://s3.marpple.co/f1/2016/7/1043023_1469769886837_150x0.png",
-    }, {
+      "index": 67,
+    },
+    {
       "name": "아이패드",
       "url": "https://s3.marpple.co/f1/2016/7/1043023_1469769820297_150x0.png",
-    }, {
+      "index": 68,
+    },
+    {
       "name": "컴퓨터",
       "url": "https://s3.marpple.co/f1/2016/7/1043023_1469769802862_150x0.png",
-    }, {
+      "index": 69,
+    },
+    {
       "name": "5",
       "url": "https://s3.marpple.co/f1/2018/1/1054966_1516076888018_74741_150x0.png",
-    }, {
+      "index": 70,
+    },
+    {
       "name": "poo 1",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548924230868_28487_150x0.png",
-    }, {
+      "index": 71,
+    },
+    {
       "name": "Sns icon_똥 안경",
       "url": "https://s3.marpple.co/f1/2017/2/1043404_1487211657799_150x0.png",
-    }, {
+      "index": 72,
+    },
+    {
       "name": "Sns icon_똥 웃음",
       "url": "https://s3.marpple.co/f1/2017/2/1043404_1487211686108_150x0.png",
-    }, {
+      "index": 73,
+    },
+    {
       "name": "4",
       "url": "https://s3.marpple.co/f1/2018/1/1054966_1516076850148_36610_150x0.png",
-    }, {
+      "index": 74,
+    },
+    {
       "name": "Sns icon_똥 놀림",
       "url": "https://s3.marpple.co/f1/2017/2/1043404_1487211670017_150x0.png",
-    }, {
+      "index": 75,
+    },
+    {
       "name": "달력",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548919531014_35045_150x0.png",
-    }, {
+      "index": 76,
+    },
+    {
       "name": "자물쇠",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548918410738_59815_150x0.png",
-    }, {
+      "index": 77,
+    },
+    {
       "name": "손 이모지",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548918353391_54897_150x0.png",
-    }, {
+      "index": 78,
+    },
+    {
       "name": "Sns icon_손바닥",
       "url": "https://s3.marpple.co/f1/2017/2/1043404_1487210472038_150x0.png",
-    }, {
+      "index": 79,
+    },
+    {
       "name": "Sns icon_검지",
       "url": "https://s3.marpple.co/f1/2017/2/1043404_1487210393226_150x0.png",
-    }, {
+      "index": 80,
+    },
+    {
       "name": "Sns icon_롹",
       "url": "https://s3.marpple.co/f1/2017/2/1043404_1487210522978_150x0.png",
-    }, {
+      "index": 81,
+    },
+    {
       "name": "Sns icon_하이파이브",
       "url": "https://s3.marpple.co/f1/2017/2/1043404_1487210538695_150x0.png",
-    }, {
+      "index": 82,
+    },
+    {
       "name": "Sns icon_브이",
       "url": "https://s3.marpple.co/f1/2017/2/1043404_1487210508758_150x0.png",
-    }, {
+      "index": 83,
+    },
+    {
       "name": "Sns icon_중지",
       "url": "https://s3.marpple.co/f1/2017/2/1043404_1487210428137_150x0.png",
-    }, {
+      "index": 84,
+    },
+    {
       "name": "Sns icon_주먹",
       "url": "https://s3.marpple.co/f1/2017/2/1043404_1487210372629_150x0.png",
-    }, {
+      "index": 85,
+    },
+    {
       "name": "Sns icon_박수",
       "url": "https://s3.marpple.co/f1/2017/2/1043404_1487210444994_150x0.png",
-    }, {
+      "index": 86,
+    },
+    {
       "name": "Sns icon_따봉",
       "url": "https://s3.marpple.co/f1/2017/2/1043404_1487210488684_150x0.png",
-    }, {
+      "index": 87,
+    },
+    {
       "name": "손 이모지 2",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548921736267_35010_150x0.png",
-    }, {
+      "index": 88,
+    },
+    {
       "name": "손 이모지 3",
       "url": "https://s3.marpple.co/f1/2019/1/1235206_1548922150829_10878_150x0.png",
+      "index": 89,
     },
   ]
   const Image = {}
+
   const string = _.reduce((a, b) => `${a}${b}`)
-
   _.strMap = _.pipe(L.map, string)
-  _.groupBySize = _.curry((limit, iter) => {
+  _.groupBySize = _.curry((size, iter) => {
     let r = L.range(Infinity)
-    return _.groupBy(_ => Math.floor(r.next().value / limit), iter)
+    return _.groupBy(_ => Math.floor(r.next().value / size), iter)
   })
-
+  C.takeAllWithLimit = limit => _.pipe(
+    _.groupBySize(limit),
+    L.values,
+    L.map(L.map(f => f())),
+    L.map(C.takeAll))
 
   Image.fetch = _ => new Promise(resolve => setTimeout(_ => resolve(data), 500))
-  Image.tmpl = imgs =>
-    `<div class="images">
+  Image.fetchOne = idx => new Promise(resolve => setTimeout(_ => resolve(data[idx]), 200))
+  Image.tmpl = imgs => `
+    <div class="images">
       ${_.strMap(img => `
-        <div class="image">
+        <div class="image" id="${img.index}">
           <div class="box"><img src="" lazy-src="${img.url}" class="fade"></div>
           <div class="name">${img.name}</div>
           <div class="remove">x</div>
-        </div>
-      `, imgs)}
-     </div>`
+        </div>`, imgs)}
+    </div>`
 
   Image.loader = limit => _.tap(
     $.findAll('img'),
     L.map(img => _ => new Promise(resolve => {
       img.onload = _ => resolve(img)
-      img.src = img.getAttribute("lazy-src")
+      img.src = img.getAttribute('lazy-src')
     })),
     C.takeAllWithLimit(limit),
-    _.each(_.each($.addClass('fade-in'))),
-  )
+    _.each(_.each($.addClass('fade-in'))))
 
-  C.takeAllWithLimit = limit => _.pipe(
-    _.groupBySize(limit),
-    L.values,
-    L.map(L.map(f => f())),
-    L.map(C.takeAll),
-  )
+  Image.modal = () => _.tap(
+    $.findAll('.box'),
+    $.on('click', ({ currentTarget: ct }) => _.go(
+      ct,
+      $.closest('.image'),
+      el => Image.fetchOne(el.id),
+      async ({ name, url }) => await Ui.modal(name, `<div class="box"><img src="" lazy-src="${url}" class="fade"></div>`),
+      Image.loader(1),
+      $.on("click", ({ currentTarget: ct }) => $.remove(ct)),
+    )))
 
   _.go(
     Image.fetch(),
@@ -511,9 +760,10 @@
     $.el,
     $.append($.qs('body')),
     Ui.remover('.remove', '.image'),
+    Image.modal(),
     Image.loader(1),
+    console.log,
   )
-
 </script>
 </body>
 </html>
